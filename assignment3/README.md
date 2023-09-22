@@ -20,7 +20,7 @@ This project explores the foundational principles of Java's Object-Oriented Prog
 2. Compile all the Java files
 
     ```sh
-    javac assignment3.*.java
+    javac assignment3/*.java
     ```
 
 3. Run the Test class
