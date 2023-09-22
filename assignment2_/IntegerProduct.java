@@ -1,4 +1,4 @@
-package assignment2;
+package Assignment2;
 
 public class IntegerProduct {
 
