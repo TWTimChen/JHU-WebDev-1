@@ -1,0 +1,2 @@
+Main-Class: assignment4.HikeBookingUI
+Class-Path: ../BhcUtils/BhcUtils.jar

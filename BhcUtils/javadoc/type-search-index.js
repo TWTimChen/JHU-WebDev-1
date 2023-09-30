@@ -1,0 +1,1 @@
+typeSearchIndex = [{"l":"All Classes and Interfaces","u":"allclasses-index.html"},{"p":"edu.jhu.en605681","l":"BookingDay"},{"p":"edu.jhu.en605681","l":"HikeType"},{"p":"edu.jhu.en605681","l":"Rates"}];updateSearchResults();
