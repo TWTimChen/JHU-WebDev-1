@@ -21,7 +21,7 @@ Ensure you have Java installed and the required JAR files are in the appropriate
 2. Run the application using the command:
 
 ```bash
-java -jar HikeBookingUI.jar
+java -jar assignment4/HikeBookingUI.jar
 ```
 
 ## Compiling and Packaging

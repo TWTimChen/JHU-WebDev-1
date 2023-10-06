@@ -4,6 +4,8 @@ import javax.swing.*;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.event.ActionEvent;
+import java.io.*;
+import java.net.Socket;
 import java.util.Calendar;
 
 import edu.jhu.en605681.*;
@@ -16,6 +18,10 @@ public class HikeBookingUI {
     private JTextField dayField, monthField, yearField;
     private JButton bookButton;
     private BookingDay date;
+    // for socket connection
+    private Socket socket;
+    private BufferedReader in;
+    private PrintWriter out;
 
     public HikeBookingUI() {
         // Create and configure frame, using GridBagLayout
@@ -130,6 +136,26 @@ public class HikeBookingUI {
         return false;
     }
 
+    private void handleServerResponse(String response) {
+        // Check for invalid response
+        String[] parts = response.split("#", 2);
+        if (parts.length != 2) {
+            JOptionPane.showMessageDialog(frame, "Invalid response from server.", "Server Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+    
+        double totalCost = Double.parseDouble(parts[0]);
+        // Check for invalid date range
+        if (totalCost == -0.01) {
+            JOptionPane.showMessageDialog(frame, parts[1], "Input Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+    
+        // Display total cost
+        String message = parts[1];
+        JOptionPane.showMessageDialog(frame, message + " Total Cost: $" + totalCost, "Quote Result", JOptionPane.INFORMATION_MESSAGE);
+    }
+
     private void calculateCostAction(ActionEvent e) {
         // Validate hike and duration selections
         if (hikesComboBox.getSelectedItem() == null || durationComboBox.getSelectedItem() == null) {
@@ -144,6 +170,51 @@ public class HikeBookingUI {
         if (!validateDate()) {
             return;
         }
+
+        // Initialize socket and streams
+        try {
+            socket = new Socket("web6.jhuep.com", 20025);
+            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            out = new PrintWriter(socket.getOutputStream(), true);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(frame, "Error connecting to server.", "Connection Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+        // Prepare data for the server
+        //hike_id#begin_year#begin_month#begin_day#duration
+        String hikeData = hike.ordinal() + "#" +
+                          date.getYear() + "#" +
+                          date.getMonth() + "#" +
+                          date.getDayOfMonth() + "#" +
+                          duration;
+
+        try {
+            // Send data to server
+            out.println(hikeData);
+
+            // Check for responses from the server
+            String response = in.readLine();
+            if (response != null) {
+                handleServerResponse(response);
+            }
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            // Handle errors
+        } finally {
+            // Close the socket and streams
+            try {
+                if (socket != null && !socket.isClosed()) {
+                    socket.close();
+                }
+            } catch (IOException ex) {
+                ex.printStackTrace();
+                // Handle errors while closing the socket
+            }
+        }
+
+        /* Old code for calculating cost locally
+        // Get response from server
 
         Rates rate = new Rates(hike);
         rate.setBeginDate(date);
@@ -170,6 +241,7 @@ public class HikeBookingUI {
         // Calculate and display total cost
         double totalCost = rate.getCost();
         JOptionPane.showMessageDialog(frame, "Total Cost: $" + totalCost, "Total Cost", JOptionPane.INFORMATION_MESSAGE);
+        */
     }
 
     public static void main(String[] args) {
