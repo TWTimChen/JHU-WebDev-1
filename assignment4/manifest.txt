@@ -1,2 +1,4 @@
+Manifest-Version: 1.0
 Main-Class: assignment4.HikeBookingUI
-Class-Path: ../BhcUtils/BhcUtils.jar
+Class-Path: BhcUtils/BhcUtils.jar
+Created-By: 20.0.2 (Oracle Corporation)
